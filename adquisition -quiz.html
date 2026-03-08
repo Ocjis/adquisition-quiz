@@ -266,6 +266,12 @@
     opacity: 0.4;
     cursor: not-allowed;
   }
+  .btn-primary .arrow {
+    display: inline-block;
+    margin-left: 6px;
+    font-size: 14px;
+    transition: transform var(--transition);
+  }
 
   /* ─── FOOTER ───────────────────────────────────────────────── */
   .page-footer {
@@ -477,7 +483,7 @@
     </div>
 
     <button class="btn-primary" id="btn-submit" disabled type="button">
-      Ver mi diagnóstico ❯
+      Ver mi diagnóstico <span class="arrow" aria-hidden="true">❯</span>
     </button>
 
     <p class="page-footer">
@@ -528,7 +534,7 @@
       <p class="result-cta-text" id="result-cta-text">Agenda una llamada corta y te explicamos cómo.</p>
 
       <a href="https://calendly.com/tengymm/tengym" class="btn-primary" id="btn-cta">
-        Agendar una llamada corta ❯
+        Agendar una llamada corta <span class="arrow" aria-hidden="true">❯</span>
       </a>
     </div>
 
