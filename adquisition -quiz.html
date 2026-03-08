@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TenGym Academy — Test Diagnóstico</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+
+<style>
+  /* ─── RESET & BASE ─────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --red:        #C0392B;
+    --red-deep:   #96281B;
+    --red-soft:   #FDECEA;
+    --ink:        #111111;
+    --ink-mid:    #444444;
+    --ink-soft:   #888888;
+    --bone:       #F7F5F2;
+    --white:      #FFFFFF;
+    --border:     rgba(0,0,0,0.08);
+    --radius:     16px;
+    --transition: 220ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bone);
+    color: var(--ink);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ─── LAYOUT ───────────────────────────────────────────────── */
+  .page {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    padding: 60px 24px 80px;
+    animation: fadeUp 0.5s cubic-bezier(0.4,0,0.2,1) forwards;
+  }
+  .page.active { display: flex; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .container {
+    width: 100%;
+    max-width: 560px;
+  }
+
+  /* ─── LOGO ─────────────────────────────────────────────────── */
+  .logo {
+    text-align: center;
+    margin-bottom: 56px;
+  }
+  .logo-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    background: var(--ink);
+    margin-bottom: 16px;
+  }
+  .logo-mark svg { display: block; }
+  .logo img {
+    width: 84px;
+    height: auto;
+    display: block;
+    margin: 0 auto 16px;
+  }
+  .logo-wordmark {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    line-height: 1;
+    letter-spacing: -0.5px;
+    color: var(--ink);
+  }
+  .logo-wordmark span {
+    color: var(--red);
+    display: block;
+  }
+  .logo-tagline {
+    margin-top: 10px;
+    font-size: 13px;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--ink-soft);
+    letter-spacing: 0.3px;
+  }
+  .logo-tagline strong {
+    font-style: italic;
+    font-weight: 500;
+    color: var(--ink-mid);
+  }
+
+  /* ─── QUIZ HEADER ──────────────────────────────────────────── */
+  .quiz-header {
+    margin-bottom: 40px;
+  }
+  .quiz-eyebrow {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 10px;
+  }
+  .quiz-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--ink);
+    margin-bottom: 12px;
+  }
+  .quiz-desc {
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.65;
+    color: var(--ink-mid);
+  }
+
+  /* ─── PROGRESS ─────────────────────────────────────────────── */
+  .progress-bar {
+    width: 100%;
+    height: 3px;
+    background: var(--border);
+    border-radius: 99px;
+    margin-bottom: 40px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--red);
+    border-radius: 99px;
+    transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  /* ─── QUESTION CARD ────────────────────────────────────────── */
+  .question-block {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 24px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 16px rgba(0,0,0,0.04);
+  }
+
+  .question-number {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 10px;
+  }
+  .question-text {
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--ink);
+    margin-bottom: 24px;
+  }
+
+  /* ─── OPTIONS ──────────────────────────────────────────────── */
+  .options { display: flex; flex-direction: column; gap: 10px; }
+
+  .option {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: var(--transition);
+    transition-property: border-color, background, box-shadow;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .option:hover {
+    border-color: rgba(192,57,43,0.3);
+    background: var(--red-soft);
+  }
+  .option.selected {
+    border-color: var(--red);
+    background: var(--red-soft);
+    box-shadow: 0 0 0 3px rgba(192,57,43,0.1);
+  }
+
+  .option-badge {
+    flex-shrink: 0;
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    background: var(--bone);
+    border: 1.5px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-soft);
+    transition: var(--transition);
+    transition-property: background, border-color, color;
+  }
+  .option.selected .option-badge {
+    background: var(--red);
+    border-color: var(--red);
+    color: var(--white);
+  }
+
+  .option-text {
+    font-size: 14.5px;
+    font-weight: 400;
+    color: var(--ink-mid);
+    line-height: 1.4;
+    transition: color var(--transition);
+  }
+  .option.selected .option-text {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  /* ─── HIDDEN INPUT ─────────────────────────────────────────── */
+  input[type="radio"] { display: none; }
+
+  /* ─── CTA BUTTON ───────────────────────────────────────────── */
+  .btn-primary {
+    display: block;
+    width: 100%;
+    padding: 18px 24px;
+    background: var(--red);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+    text-align: center;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: var(--transition);
+    transition-property: background, transform, box-shadow;
+    box-shadow: 0 2px 8px rgba(192,57,43,0.25), 0 8px 24px rgba(192,57,43,0.15);
+    margin-top: 8px;
+    text-decoration: none;
+  }
+  .btn-primary:hover:not(:disabled) {
+    background: var(--red-deep);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(192,57,43,0.3), 0 12px 32px rgba(192,57,43,0.2);
+    color: var(--white);
+  }
+  .btn-primary:active:not(:disabled) {
+    transform: translateY(0);
+  }
+  .btn-primary:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  /* ─── FOOTER ───────────────────────────────────────────────── */
+  .page-footer {
+    margin-top: 40px;
+    text-align: center;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+  }
+  .page-footer a {
+    color: var(--red);
+    text-decoration: none;
+  }
+  .page-footer a:hover { text-decoration: underline; }
+
+  /* ─── RESULT PAGE ──────────────────────────────────────────── */
+  .result-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 36px 28px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 8px 32px rgba(0,0,0,0.06);
+  }
+
+  .result-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 16px;
+  }
+  .result-eyebrow .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--red);
+    display: inline-block;
+  }
+
+  .result-headline {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--ink);
+    margin-bottom: 24px;
+  }
+
+  .result-goal {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: var(--red-soft);
+    border-left: 3px solid var(--red);
+    border-radius: 0 10px 10px 0;
+    padding: 14px 16px;
+    margin-bottom: 24px;
+  }
+  .result-goal-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .result-goal-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--red-deep);
+    line-height: 1.45;
+  }
+
+  .result-body {
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--ink-mid);
+    margin-bottom: 16px;
+  }
+  .result-body + .result-body { margin-top: -4px; }
+
+  .result-cta-text {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 20px;
+    margin-top: 8px;
+  }
+
+  /* ─── DIVIDER ──────────────────────────────────────────────── */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 28px 0;
+  }
+
+  /* ─── RESPONSIVE ───────────────────────────────────────────── */
+  @media (max-width: 480px) {
+    .page { padding: 40px 16px 64px; }
+    .quiz-title { font-size: 24px; }
+    .result-headline { font-size: 22px; }
+    .result-card { padding: 28px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════
+     PAGE 1 — QUIZ
+════════════════════════════════════════════════════════════ -->
+<div class="page active" id="page-quiz">
+  <div class="container">
+
+    <div class="logo">
+      <img src="https://i.imgur.com/b3wiWQt.png"
+           alt="TenGym Logo"
+           loading="lazy"
+           width="84"
+           height="84" />
+      <div class="logo-wordmark">TenGym <span>Academy</span></div>
+      <p class="logo-tagline">El inglés no se estudia. <strong>Se entrena.</strong></p>
+    </div>
+
+    <div class="quiz-header">
+      <p class="quiz-eyebrow">Test diagnóstico TenGym</p>
+      <h1 class="quiz-title">Descubre qué está frenando tu inglés</h1>
+      <p class="quiz-desc">Responde estas 3 preguntas rápidas y verás el diagnóstico real de por qué tu inglés no avanza — según tu situación, tu meta y el tiempo que llevas intentándolo.</p>
+    </div>
+
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+    </div>
+
+    <div class="question-block" id="q1-block">
+      <p class="question-number">Pregunta 1 de 3</p>
+      <p class="question-text">¿Cuál describe mejor tu situación con el inglés?</p>
+      <div class="options" id="q1-options">
+        <label class="option" data-q="q1" data-val="A">
+          <input type="radio" name="q1" value="A">
+          <span class="option-badge">A</span>
+          <span class="option-text">Entiendo bastante pero no puedo hablar.</span>
+        </label>
+        <label class="option" data-q="q1" data-val="B">
+          <input type="radio" name="q1" value="B">
+          <span class="option-badge">B</span>
+          <span class="option-text">Puedo hablar pero con mucha dificultad.</span>
+        </label>
+        <label class="option" data-q="q1" data-val="C">
+          <input type="radio" name="q1" value="C">
+          <span class="option-badge">C</span>
+          <span class="option-text">Entiendo poco cuando escucho inglés.</span>
+        </label>
+        <label class="option" data-q="q1" data-val="D">
+          <input type="radio" name="q1" value="D">
+          <span class="option-badge">D</span>
+          <span class="option-text">Estoy empezando desde cero.</span>
+        </label>
+        <label class="option" data-q="q1" data-val="E">
+          <input type="radio" name="q1" value="E">
+          <span class="option-badge">E</span>
+          <span class="option-text">Siempre traduzco mentalmente.</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="question-block" id="q2-block">
+      <p class="question-number">Pregunta 2 de 3</p>
+      <p class="question-text">¿Cuál sería tu mayor logro en inglés?</p>
+      <div class="options" id="q2-options">
+        <label class="option" data-q="q2" data-val="A" data-summary="comprender películas o series sin subtítulos">
+          <input type="radio" name="q2" value="A">
+          <span class="option-badge">A</span>
+          <span class="option-text">Comprender películas o series sin subtítulos.</span>
+        </label>
+        <label class="option" data-q="q2" data-val="B" data-summary="entender podcasts, noticias y audios en inglés real">
+          <input type="radio" name="q2" value="B">
+          <span class="option-badge">B</span>
+          <span class="option-text">Entender podcasts, noticias y audios en inglés real.</span>
+        </label>
+        <label class="option" data-q="q2" data-val="C" data-summary="seguir conversaciones cotidianas sin perderte">
+          <input type="radio" name="q2" value="C">
+          <span class="option-badge">C</span>
+          <span class="option-text">Seguir conversaciones cotidianas sin perderte.</span>
+        </label>
+        <label class="option" data-q="q2" data-val="D" data-summary="usar el inglés como herramienta de desarrollo personal">
+          <input type="radio" name="q2" value="D">
+          <span class="option-badge">D</span>
+          <span class="option-text">Desarrollo personal a través del inglés.</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="question-block" id="q3-block">
+      <p class="question-number">Pregunta 3 de 3</p>
+      <p class="question-text">¿Cuánto tiempo llevas intentando mejorar tu inglés sin los resultados que esperabas?</p>
+      <div class="options" id="q3-options">
+        <label class="option" data-q="q3" data-val="A">
+          <input type="radio" name="q3" value="A">
+          <span class="option-badge">A</span>
+          <span class="option-text">Menos de 1 año.</span>
+        </label>
+        <label class="option" data-q="q3" data-val="B">
+          <input type="radio" name="q3" value="B">
+          <span class="option-badge">B</span>
+          <span class="option-text">De 1 a 3 años.</span>
+        </label>
+        <label class="option" data-q="q3" data-val="C">
+          <input type="radio" name="q3" value="C">
+          <span class="option-badge">C</span>
+          <span class="option-text">Más de 3 años.</span>
+        </label>
+      </div>
+    </div>
+
+    <button class="btn-primary" id="btn-submit" disabled type="button">
+      Ver mi diagnóstico →
+    </button>
+
+    <p class="page-footer">
+      ¿Necesitas ayuda? <a href="mailto:support@tengymm.com">support@tengymm.com</a>
+    </p>
+
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     PAGE 2 — RESULT
+════════════════════════════════════════════════════════════ -->
+<div class="page" id="page-result">
+  <div class="container">
+
+    <div class="logo">
+      <img src="https://i.imgur.com/b3wiWQt.png"
+           alt="TenGym Logo"
+           loading="lazy"
+           width="84"
+           height="84" />
+      <div class="logo-wordmark">TenGym <span>Academy</span></div>
+      <p class="logo-tagline">El inglés no se estudia. <strong>Se entrena.</strong></p>
+    </div>
+
+    <div class="result-card" id="result-card">
+      <p class="result-eyebrow"><span class="dot"></span> TenGym Test — Tu diagnóstico</p>
+
+      <h2 class="result-headline" id="result-headline">
+        El problema real: Entiendo poco cuando escucho inglés.
+      </h2>
+
+      <div class="result-goal" id="result-goal">
+        <span class="result-goal-icon">🎯</span>
+        <span class="result-goal-text" id="result-goal-text">Tu meta principal es seguir conversaciones cotidianas sin perderte.</span>
+      </div>
+
+      <p class="result-body" id="result-body-1">
+        El inglés de los libros y el inglés real no son lo mismo. Uno es lento y ordenado; el otro es rápido, fusionado y natural.
+      </p>
+      <p class="result-body" id="result-body-2">
+        Si tu oído nunca se entrenó con inglés real, tu cerebro no tiene cómo procesarlo. En TenGym entrenamos precisamente esa parte para que empieces a entender lo que antes se te escapaba.
+      </p>
+
+      <div class="divider"></div>
+
+      <p class="result-cta-text" id="result-cta-text">Agenda una llamada corta y te explicamos cómo.</p>
+
+      <a href="https://calendly.com/tengymm/tengym" class="btn-primary" id="btn-cta">
+        Agendar una llamada corta →
+      </a>
+    </div>
+
+    <p class="page-footer" style="margin-top: 32px;">
+      ¿Necesitas ayuda? <a href="mailto:support@tengymm.com">support@tengymm.com</a>
+    </p>
+
+  </div>
+</div>
+
+
+<script>
+/* ── State ─────────────────────────────────────────────────── */
+const answers = { q1: null, q2: null, q3: null };
+
+/* ── Option selection ──────────────────────────────────────── */
+document.querySelectorAll('.option').forEach(opt => {
+  opt.addEventListener('click', () => {
+    const q   = opt.dataset.q;
+    const val = opt.dataset.val;
+
+    document.querySelectorAll(`.option[data-q="${q}"]`).forEach(o => o.classList.remove('selected'));
+    opt.classList.add('selected');
+    opt.querySelector('input[type="radio"]').checked = true;
+    answers[q] = val;
+
+    updateProgress();
+  });
+});
+
+function updateProgress() {
+  const answered = Object.values(answers).filter(Boolean).length;
+  const pct = (answered / 3) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+
+  const btn = document.getElementById('btn-submit');
+  btn.disabled = answered < 3;
+}
+
+/* ── Diagnostic data (contenido de index.html) ───────────────── */
+const problems = {
+  A: 'El problema real 🤐: Entiendo bastante pero no puedo hablar.',
+  B: 'El problema real 🐢: Puedo hablar pero con mucha dificultad.',
+  C: 'El problema real 🎧: Entiendo poco cuando escucho inglés.',
+  D: 'El problema real 🌱: Estoy empezando desde cero.',
+  E: 'El problema real 🔄: Siempre traduzco mentalmente.'
+};
+
+const explanations = {
+  A: [
+    'Tu cerebro aprendió inglés para entenderlo, no para hablarlo. Puedes seguir series o leer correos, pero cuando alguien te habla y espera respuesta todo se congela.',
+    'No es falta de inglés, sino que nunca entrenaste la parte correcta. En TenGym convertimos el inglés que ya tienes en inglés que sale solo cuando lo necesitas.'
+  ],
+  B: [
+    'Ya tienes la base, pero todavía no fluye. Hablar inglés se siente como conducir con el freno de mano puesto: demasiado esfuerzo, demasiadas pausas.',
+    'La diferencia está en automatizar el idioma. En TenGym lo hacemos con práctica de conversación real hasta que hablar se vuelve natural.'
+  ],
+  C: [
+    'El inglés de los libros y el inglés real no son lo mismo. Uno es lento y ordenado; el otro es rápido, fusionado y natural.',
+    'Si tu oído nunca se entrenó con inglés real, tu cerebro no tiene cómo procesarlo. En TenGym entrenamos precisamente esa parte para que empieces a entender lo que antes se te escapaba.'
+  ],
+  D: [
+    'Empezar desde cero no es el problema. El problema es empezar mal con apps y gramática que te enseñan a estudiar inglés, pero no a usarlo.',
+    'El inglés es una habilidad que se entrena, no se memoriza. En TenGym practicas desde el día uno y el progreso se siente en las primeras semanas.'
+  ],
+  E: [
+    'Escuchas en inglés, traduces al español, piensas, vuelves a traducir… y ya vas tarde en cada frase. Ese ciclo agota y te frena en cada conversación.',
+    'No es falta de vocabulario, es que tu cerebro todavía opera en español. En TenGym entrenamos el salto a pensar directamente en inglés para que puedas responder a tiempo.'
+  ]
+};
+
+const ctaCopy = {
+  A: 'Agenda una llamada corta y te decimos exactamente cómo.',
+  B: 'Agenda una llamada y te decimos qué necesita específicamente tu caso.',
+  C: 'Agenda una llamada corta y te explicamos cómo.',
+  D: 'Agenda una llamada y empieza diferente esta vez.',
+  E: 'Agenda una llamada corta y te decimos si podemos ayudarte.'
+};
+
+/* ── Show result ───────────────────────────────────────────── */
+function showResult() {
+  const q1 = answers.q1;
+  const q2 = answers.q2;
+
+  if (!q1 || !q2 || !answers.q3) {
+    alert('Por favor responde las 3 preguntas para ver tu diagnóstico.');
+    return;
+  }
+
+  const q2Label = document.querySelector(`.option[data-q="q2"][data-val="${q2}"]`);
+  const q2Summary = q2Label ? (q2Label.dataset.summary || '') : '';
+
+  const goalText = q2Summary
+    ? `Tu meta principal es ${q2Summary}.`
+    : '';
+
+  document.getElementById('result-headline').textContent = problems[q1] || problems.C;
+  document.getElementById('result-goal-text').textContent = goalText;
+  document.getElementById('result-body-1').textContent = (explanations[q1] || explanations.C)[0];
+  document.getElementById('result-body-2').textContent = (explanations[q1] || explanations.C)[1];
+  document.getElementById('result-cta-text').textContent = ctaCopy[q1] || ctaCopy.C;
+
+  document.getElementById('page-quiz').classList.remove('active');
+  const resultPage = document.getElementById('page-result');
+  resultPage.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+document.getElementById('btn-submit').addEventListener('click', showResult);
+</script>
+
+</body>
+</html>
